@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Footers\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\ImageColumn;
@@ -15,33 +16,57 @@ class FootersTable
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Foto')
-                    ->disk('public')
-                    ->height(60)
-                    ->circular(),
+           ImageColumn::make('image')
+                ->label('Logo')
+                ->disk('public')
+                ->height(50),
 
-                Tables\Columns\TextColumn::make('content')
-                    ->label('Cuplikan Sambutan')
-                    ->formatStateUsing(fn (?string $state): string => Str::limit(strip_tags($state), 80))
-                    ->wrap(),
+            TextColumn::make('alamat')
+                ->label('Alamat')
+                ->limit(50)
+                ->tooltip(fn (?string $state): ?string => $state)
+                ->searchable(),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Diperbarui')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),    
-            ])
-            ->filters([
-                //
-            ])
-            ->recordActions([
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+            TextColumn::make('email')
+                ->label('Email')
+                ->searchable()
+                ->copyable()
+                ->copyMessage('Email disalin!')
+                ->icon('heroicon-o-envelope'),
+
+            TextColumn::make('wa')
+                ->label('WhatsApp')
+                ->copyable()
+                ->copyMessage('Nomor WA disalin!')
+                ->icon('heroicon-o-chat-bubble-left-right')
+                ->prefix('+62 '),
+
+            TextColumn::make('link_instagram')
+                ->label('Instagram')
+                ->url(fn ($record) => $record->link_instagram, true)
+                ->icon('heroicon-o-link')
+                ->formatStateUsing(fn (?string $state): string => $state ? 'Buka' : '-')
+                ->color('info'),
+
+            TextColumn::make('updated_at')
+                ->label('Diperbarui')
+                ->dateTime('d M Y H:i')
+                ->sortable(),
+        ])
+        ->filters([
+            //
+        ])
+        ->actions([
+            EditAction::make(),
+            DeleteAction::make(),
+        ])
+        ->bulkActions([
+            BulkActionGroup::make([
+                DeleteBulkAction::make(),
+            ]),
+        ])
+        ->defaultSort('updated_at', 'desc');
 }
+            
+    }
+
