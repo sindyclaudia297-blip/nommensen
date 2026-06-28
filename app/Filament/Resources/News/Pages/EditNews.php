@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\News\Pages;
 
 use App\Filament\Resources\News\NewsResource;
-use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Str;
 
 class EditNews extends EditRecord
 {
@@ -13,7 +13,17 @@ class EditNews extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            \Filament\Actions\DeleteAction::make(),
         ];
+    }
+
+    /**
+     * (Opsional) Regenerasi slug saat judul diubah.
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['slug'] = Str::slug($data['title']) . '-' . time();
+
+        return $data;
     }
 }
